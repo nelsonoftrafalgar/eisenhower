@@ -1,5 +1,6 @@
 import React, { forwardRef } from 'react'
 
+import { UniqueIdentifier } from '@dnd-kit/core'
 import classNames from 'classnames'
 import styles from './Container.module.css'
 
@@ -7,30 +8,11 @@ export interface ContainerProps {
 	children: React.ReactNode
 	columns?: number
 	style?: React.CSSProperties
-	horizontal?: boolean
-	hover?: boolean
-	scrollable?: boolean
-	shadow?: boolean
-	placeholder?: boolean
-	unstyled?: boolean
+	id: UniqueIdentifier
 }
 
 const Container = forwardRef<HTMLDivElement, ContainerProps>(
-	(
-		{
-			children,
-			columns = 1,
-			horizontal,
-			hover,
-			placeholder,
-			style,
-			scrollable,
-			shadow,
-			unstyled,
-			...props
-		}: ContainerProps,
-		ref
-	) => {
+	({ children, columns = 1, style, id, ...props }: ContainerProps, ref) => {
 		return (
 			<div
 				{...props}
@@ -41,16 +23,9 @@ const Container = forwardRef<HTMLDivElement, ContainerProps>(
 						'--columns': columns
 					} as React.CSSProperties
 				}
-				className={classNames(
-					styles.Container,
-					unstyled && styles.unstyled,
-					horizontal && styles.horizontal,
-					hover && styles.hover,
-					placeholder && styles.placeholder,
-					scrollable && styles.scrollable,
-					shadow && styles.shadow
-				)}
+				className={classNames(styles.container, styles[id])}
 			>
+				<h2>{id.toString().toUpperCase()}</h2>
 				<ul>{children}</ul>
 			</div>
 		)

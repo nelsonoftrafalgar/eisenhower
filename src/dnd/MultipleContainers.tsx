@@ -65,19 +65,14 @@ function DroppableContainer({
 	items: UniqueIdentifier[]
 	style?: React.CSSProperties
 }) {
-	const { active, isDragging, over, setNodeRef, transition, transform } =
-		useSortable({
-			id,
-			data: {
-				type: 'container',
-				children: items
-			},
-			animateLayoutChanges
-		})
-	const isOverContainer = over
-		? (id === over.id && active?.data.current?.type !== 'container') ||
-		  items.includes(over.id)
-		: false
+	const { isDragging, setNodeRef, transition, transform } = useSortable({
+		id,
+		data: {
+			type: 'container',
+			children: items
+		},
+		animateLayoutChanges
+	})
 
 	return (
 		<Container
@@ -88,8 +83,8 @@ function DroppableContainer({
 				transform: CSS.Translate.toString(transform),
 				opacity: isDragging ? 0.5 : undefined
 			}}
-			hover={isOverContainer}
 			columns={columns}
+			id={id}
 			{...props}
 		>
 			{children}
@@ -126,9 +121,7 @@ interface Props {
 	}): React.CSSProperties
 	wrapperStyle?(args: { index: number }): React.CSSProperties
 	itemCount?: number
-	items?: Items
 	handle?: boolean
-	renderItem?: any
 	strategy?: SortingStrategy
 	modifiers?: Modifiers
 	minimal?: boolean
@@ -145,27 +138,20 @@ export function MultipleContainers({
 	cancelDrop,
 	columns,
 	handle = false,
-	items: initialItems,
 	containerStyle,
 	coordinateGetter = multipleContainersCoordinateGetter,
 	getItemStyles = () => ({}),
 	wrapperStyle = () => ({}),
-	minimal = false,
 	modifiers,
-	renderItem,
 	strategy = verticalListSortingStrategy,
-	vertical = false,
-	scrollable
+	vertical = false
 }: Props) {
-	const [items, setItems] = useState<Items>(
-		() =>
-			initialItems ?? {
-				A: createRange(itemCount, (index) => `A${index + 1}`),
-				B: createRange(itemCount, (index) => `B${index + 1}`),
-				C: createRange(itemCount, (index) => `C${index + 1}`),
-				D: createRange(itemCount, (index) => `D${index + 1}`)
-			}
-	)
+	const [items, setItems] = useState<Items>(() => ({
+		do: createRange(itemCount, (index) => `A${index + 1}`),
+		schedule: createRange(itemCount, (index) => `B${index + 1}`),
+		delegate: createRange(itemCount, (index) => `C${index + 1}`),
+		delete: createRange(itemCount, (index) => `D${index + 1}`)
+	}))
 	const [containers, setContainers] = useState(
 		Object.keys(items) as UniqueIdentifier[]
 	)
@@ -426,10 +412,14 @@ export function MultipleContainers({
 		>
 			<div
 				style={{
-					display: 'inline-grid',
+					backgroundColor: '#262626',
+					display: 'grid',
 					boxSizing: 'border-box',
 					padding: 20,
-					gridAutoFlow: vertical ? 'row' : 'column'
+					gap: '20px',
+					gridTemplateColumns: '1fr 1fr',
+					gridTemplateRows: '1fr 1fr',
+					height: '100%'
 				}}
 			>
 				<SortableContext
@@ -444,9 +434,7 @@ export function MultipleContainers({
 							id={containerId}
 							columns={columns}
 							items={items[containerId]}
-							scrollable={scrollable}
 							style={containerStyle}
-							unstyled={minimal}
 						>
 							<SortableContext items={items[containerId]} strategy={strategy}>
 								{items[containerId].map((value, index) => {
@@ -459,7 +447,6 @@ export function MultipleContainers({
 											handle={handle}
 											style={getItemStyles}
 											wrapperStyle={wrapperStyle}
-											renderItem={renderItem}
 											containerId={containerId}
 											getIndex={getIndex}
 										/>
@@ -472,71 +459,28 @@ export function MultipleContainers({
 			</div>
 			{createPortal(
 				<DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
-					{activeId
-						? containers.includes(activeId)
-							? renderContainerDragOverlay(activeId)
-							: renderSortableItemDragOverlay(activeId)
-						: null}
+					{activeId && (
+						<Item
+							value={activeId}
+							style={getItemStyles({
+								containerId: findContainer(activeId) as UniqueIdentifier,
+								overIndex: -1,
+								index: getIndex(activeId),
+								value: activeId,
+								isSorting: true,
+								isDragging: true,
+								isDragOverlay: true
+							})}
+							color={getColor(activeId)}
+							wrapperStyle={wrapperStyle({ index: 0 })}
+							dragOverlay
+						/>
+					)}
 				</DragOverlay>,
 				document.body
 			)}
 		</DndContext>
 	)
-
-	function renderSortableItemDragOverlay(id: UniqueIdentifier) {
-		return (
-			<Item
-				value={id}
-				handle={handle}
-				style={getItemStyles({
-					containerId: findContainer(id) as UniqueIdentifier,
-					overIndex: -1,
-					index: getIndex(id),
-					value: id,
-					isSorting: true,
-					isDragging: true,
-					isDragOverlay: true
-				})}
-				color={getColor(id)}
-				wrapperStyle={wrapperStyle({ index: 0 })}
-				renderItem={renderItem}
-				dragOverlay
-			/>
-		)
-	}
-
-	function renderContainerDragOverlay(containerId: UniqueIdentifier) {
-		return (
-			<Container
-				columns={columns}
-				style={{
-					height: '100%'
-				}}
-				shadow
-				unstyled={false}
-			>
-				{items[containerId].map((item, index) => (
-					<Item
-						key={item}
-						value={item}
-						handle={handle}
-						style={getItemStyles({
-							containerId,
-							overIndex: -1,
-							index: getIndex(item),
-							value: item,
-							isDragging: false,
-							isSorting: false,
-							isDragOverlay: false
-						})}
-						color={getColor(item)}
-						wrapperStyle={wrapperStyle({ index })}
-						renderItem={renderItem}
-					/>
-				))}
-			</Container>
-		)
-	}
 
 	function getNextContainerId() {
 		const containerIds = Object.keys(items)
@@ -569,7 +513,6 @@ interface SortableItemProps {
 	disabled?: boolean
 	style(args: any): React.CSSProperties
 	getIndex(id: UniqueIdentifier): number
-	renderItem(): React.ReactElement
 	wrapperStyle({ index }: { index: number }): React.CSSProperties
 }
 
@@ -577,8 +520,6 @@ function SortableItem({
 	disabled,
 	id,
 	index,
-	handle,
-	renderItem,
 	style,
 	containerId,
 	getIndex,
@@ -596,16 +537,11 @@ function SortableItem({
 	} = useSortable({
 		id
 	})
-	const mounted = useMountStatus()
-	const mountedWhileDragging = isDragging && !mounted
 
 	return (
 		<Item
 			ref={disabled ? undefined : setNodeRef}
 			value={id}
-			dragging={isDragging}
-			sorting={isSorting}
-			handle={handle}
 			index={index}
 			wrapperStyle={wrapperStyle({ index })}
 			style={style({
@@ -619,21 +555,7 @@ function SortableItem({
 			color={getColor(id)}
 			transition={transition}
 			transform={transform}
-			fadeIn={mountedWhileDragging}
 			listeners={listeners}
-			renderItem={renderItem}
 		/>
 	)
-}
-
-function useMountStatus() {
-	const [isMounted, setIsMounted] = useState(false)
-
-	useEffect(() => {
-		const timeout = setTimeout(() => setIsMounted(true), 500)
-
-		return () => clearTimeout(timeout)
-	}, [])
-
-	return isMounted
 }

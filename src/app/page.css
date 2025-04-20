@@ -46,7 +46,6 @@
 }
 
 .draggable {
-	/* width: fit-content; */
 	display: flex;
 }
 
@@ -56,7 +55,7 @@
 }
 
 .drag-icon {
-	cursor: pointer;
+	cursor: grab;
 	position: relative;
 	width: 25px;
 }

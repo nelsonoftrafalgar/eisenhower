@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react'
 
+import DragHandle from '../../assets/drag-handle.svg'
 import type { DraggableSyntheticListeners } from '@dnd-kit/core'
+import Image from 'next/image'
 import type { Transform } from '@dnd-kit/utilities'
 import classNames from 'classnames'
 import styles from './Item.module.css'
@@ -10,7 +12,6 @@ export interface Props {
 	color?: string
 	disabled?: boolean
 	dragging?: boolean
-	handle?: boolean
 	height?: number
 	index?: number
 	fadeIn?: boolean
@@ -21,19 +22,6 @@ export interface Props {
 	transition?: string | null
 	wrapperStyle?: React.CSSProperties
 	value: React.ReactNode
-	renderItem?(args: {
-		dragOverlay: boolean
-		dragging: boolean
-		sorting: boolean
-		index: number | undefined
-		fadeIn: boolean
-		listeners: DraggableSyntheticListeners
-		ref: React.Ref<HTMLElement>
-		style: React.CSSProperties | undefined
-		transform: Props['transform']
-		transition: Props['transition']
-		value: Props['value']
-	}): React.ReactElement
 }
 
 export const Item = React.memo(
@@ -42,14 +30,8 @@ export const Item = React.memo(
 			{
 				color,
 				dragOverlay,
-				dragging,
-				disabled,
-				fadeIn,
-				handle,
 				index,
 				listeners,
-				renderItem,
-				sorting,
 				style,
 				transition,
 				transform,
@@ -71,28 +53,9 @@ export const Item = React.memo(
 				}
 			}, [dragOverlay])
 
-			return renderItem ? (
-				renderItem({
-					dragOverlay: Boolean(dragOverlay),
-					dragging: Boolean(dragging),
-					sorting: Boolean(sorting),
-					index,
-					fadeIn: Boolean(fadeIn),
-					listeners,
-					ref,
-					style,
-					transform,
-					transition,
-					value
-				})
-			) : (
+			return (
 				<li
-					className={classNames(
-						styles.Wrapper,
-						fadeIn && styles.fadeIn,
-						sorting && styles.sorting,
-						dragOverlay && styles.dragOverlay
-					)}
+					className={classNames(styles.Wrapper)}
 					style={
 						{
 							...wrapperStyle,
@@ -109,23 +72,12 @@ export const Item = React.memo(
 					}
 					ref={ref}
 				>
-					<div
-						className={classNames(
-							styles.Item,
-							dragging && styles.dragging,
-							handle && styles.withHandle,
-							dragOverlay && styles.dragOverlay,
-							disabled && styles.disabled,
-							color && styles.color
-						)}
-						style={style}
-						data-cypress='draggable-item'
-						{...(!handle ? listeners : undefined)}
-						{...props}
-						tabIndex={!handle ? 0 : undefined}
-					>
-						{value}
+					<div {...listeners} tabIndex={0} className='drag-icon'>
+						<Image fill src={DragHandle} alt='' />
 					</div>
+					<span className={classNames(styles.Item)} style={style} {...props}>
+						{value}
+					</span>
 				</li>
 			)
 		}
