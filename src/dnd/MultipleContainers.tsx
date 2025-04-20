@@ -152,7 +152,7 @@ interface Props {
 
 export const TRASH_ID = 'void'
 const PLACEHOLDER_ID = 'placeholder'
-const empty: UniqueIdentifier[] = []
+// const empty: UniqueIdentifier[] = []
 
 export function MultipleContainers({
 	adjustScale = false,
@@ -486,17 +486,6 @@ export function MultipleContainers({
 							</SortableContext>
 						</DroppableContainer>
 					))}
-					{minimal ? undefined : (
-						<DroppableContainer
-							id={PLACEHOLDER_ID}
-							disabled={isSortingContainer}
-							items={empty}
-							onClick={handleAddColumn}
-							placeholder
-						>
-							+ Add column
-						</DroppableContainer>
-					)}
 				</SortableContext>
 			</div>
 			{createPortal(
@@ -573,18 +562,6 @@ export function MultipleContainers({
 
 	function handleRemove(containerID: UniqueIdentifier) {
 		setContainers((containers) => containers.filter((id) => id !== containerID))
-	}
-
-	function handleAddColumn() {
-		const newContainerId = getNextContainerId()
-
-		unstable_batchedUpdates(() => {
-			setContainers((containers) => [...containers, newContainerId])
-			setItems((items) => ({
-				...items,
-				[newContainerId]: []
-			}))
-		})
 	}
 
 	function getNextContainerId() {
