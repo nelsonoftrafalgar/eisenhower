@@ -28,7 +28,6 @@ import {
 	getFirstCollision,
 	pointerWithin,
 	rectIntersection,
-	useDroppable,
 	useSensor,
 	useSensors
 } from '@dnd-kit/core'
@@ -66,23 +65,15 @@ function DroppableContainer({
 	items: UniqueIdentifier[]
 	style?: React.CSSProperties
 }) {
-	const {
-		active,
-		attributes,
-		isDragging,
-		listeners,
-		over,
-		setNodeRef,
-		transition,
-		transform
-	} = useSortable({
-		id,
-		data: {
-			type: 'container',
-			children: items
-		},
-		animateLayoutChanges
-	})
+	const { active, isDragging, over, setNodeRef, transition, transform } =
+		useSortable({
+			id,
+			data: {
+				type: 'container',
+				children: items
+			},
+			animateLayoutChanges
+		})
 	const isOverContainer = over
 		? (id === over.id && active?.data.current?.type !== 'container') ||
 		  items.includes(over.id)
@@ -98,10 +89,6 @@ function DroppableContainer({
 				opacity: isDragging ? 0.5 : undefined
 			}}
 			hover={isOverContainer}
-			handleProps={{
-				...attributes,
-				...listeners
-			}}
 			columns={columns}
 			{...props}
 		>
@@ -145,14 +132,12 @@ interface Props {
 	strategy?: SortingStrategy
 	modifiers?: Modifiers
 	minimal?: boolean
-	trashable?: boolean
 	scrollable?: boolean
 	vertical?: boolean
 }
 
 export const TRASH_ID = 'void'
 const PLACEHOLDER_ID = 'placeholder'
-// const empty: UniqueIdentifier[] = []
 
 export function MultipleContainers({
 	adjustScale = false,
@@ -169,7 +154,6 @@ export function MultipleContainers({
 	modifiers,
 	renderItem,
 	strategy = verticalListSortingStrategy,
-	trashable = false,
 	vertical = false,
 	scrollable
 }: Props) {
@@ -458,13 +442,11 @@ export function MultipleContainers({
 						<DroppableContainer
 							key={containerId}
 							id={containerId}
-							label={minimal ? undefined : `Column ${containerId}`}
 							columns={columns}
 							items={items[containerId]}
 							scrollable={scrollable}
 							style={containerStyle}
 							unstyled={minimal}
-							onRemove={() => handleRemove(containerId)}
 						>
 							<SortableContext items={items[containerId]} strategy={strategy}>
 								{items[containerId].map((value, index) => {
@@ -498,9 +480,6 @@ export function MultipleContainers({
 				</DragOverlay>,
 				document.body
 			)}
-			{trashable && activeId && !containers.includes(activeId) ? (
-				<Trash id={TRASH_ID} />
-			) : null}
 		</DndContext>
 	)
 
@@ -529,7 +508,6 @@ export function MultipleContainers({
 	function renderContainerDragOverlay(containerId: UniqueIdentifier) {
 		return (
 			<Container
-				label={`Column ${containerId}`}
 				columns={columns}
 				style={{
 					height: '100%'
@@ -560,10 +538,6 @@ export function MultipleContainers({
 		)
 	}
 
-	function handleRemove(containerID: UniqueIdentifier) {
-		setContainers((containers) => containers.filter((id) => id !== containerID))
-	}
-
 	function getNextContainerId() {
 		const containerIds = Object.keys(items)
 		const lastContainerId = containerIds[containerIds.length - 1]
@@ -585,34 +559,6 @@ function getColor(id: UniqueIdentifier) {
 	}
 
 	return undefined
-}
-
-function Trash({ id }: { id: UniqueIdentifier }) {
-	const { setNodeRef, isOver } = useDroppable({
-		id
-	})
-
-	return (
-		<div
-			ref={setNodeRef}
-			style={{
-				display: 'flex',
-				alignItems: 'center',
-				justifyContent: 'center',
-				position: 'fixed',
-				left: '50%',
-				marginLeft: -150,
-				bottom: 20,
-				width: 300,
-				height: 60,
-				borderRadius: 5,
-				border: '1px solid',
-				borderColor: isOver ? 'red' : '#DDD'
-			}}
-		>
-			Drop here to delete
-		</div>
-	)
 }
 
 interface SortableItemProps {
@@ -640,7 +586,6 @@ function SortableItem({
 }: SortableItemProps) {
 	const {
 		setNodeRef,
-		setActivatorNodeRef,
 		listeners,
 		isDragging,
 		isSorting,
@@ -661,7 +606,6 @@ function SortableItem({
 			dragging={isDragging}
 			sorting={isSorting}
 			handle={handle}
-			handleProps={handle ? { ref: setActivatorNodeRef } : undefined}
 			index={index}
 			wrapperStyle={wrapperStyle({ index })}
 			style={style({

@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react'
 
 import type { DraggableSyntheticListeners } from '@dnd-kit/core'
-import Handle from './Handle'
-import { Remove } from './Remove'
 import type { Transform } from '@dnd-kit/utilities'
 import classNames from 'classnames'
 import styles from './Item.module.css'
@@ -13,7 +11,6 @@ export interface Props {
 	disabled?: boolean
 	dragging?: boolean
 	handle?: boolean
-	handleProps?: any
 	height?: number
 	index?: number
 	fadeIn?: boolean
@@ -24,7 +21,6 @@ export interface Props {
 	transition?: string | null
 	wrapperStyle?: React.CSSProperties
 	value: React.ReactNode
-	onRemove?(): void
 	renderItem?(args: {
 		dragOverlay: boolean
 		dragging: boolean
@@ -50,11 +46,8 @@ export const Item = React.memo(
 				disabled,
 				fadeIn,
 				handle,
-				handleProps,
-				height,
 				index,
 				listeners,
-				onRemove,
 				renderItem,
 				sorting,
 				style,
@@ -132,12 +125,6 @@ export const Item = React.memo(
 						tabIndex={!handle ? 0 : undefined}
 					>
 						{value}
-						<span className={styles.Actions}>
-							{onRemove ? (
-								<Remove className={styles.Remove} onClick={onRemove} />
-							) : null}
-							{handle ? <Handle {...handleProps} {...listeners} /> : null}
-						</span>
 					</div>
 				</li>
 			)
