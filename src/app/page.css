@@ -1,0 +1,88 @@
+.container {
+	display: grid;
+	grid-template-rows: repeat(2, 1fr);
+	grid-template-columns: repeat(2, 1fr);
+	height: 100%;
+	width: 100%;
+	gap: 20px;
+	padding: 20px;
+	overflow: hidden;
+	background-color: #262626;
+}
+
+.do {
+	background-color: #4bad00;
+	padding: 5px;
+	border-top-right-radius: 25px;
+	border-bottom-left-radius: 25px;
+}
+
+.schedule {
+	background-color: #0067be;
+	padding: 5px;
+	border-top-left-radius: 25px;
+	border-bottom-right-radius: 25px;
+}
+
+.delegate {
+	background-color: #bf8300;
+	padding: 5px;
+	border-bottom-right-radius: 25px;
+	border-top-left-radius: 25px;
+}
+
+.delete {
+	background-color: #9c003e;
+	padding: 5px;
+	border-bottom-left-radius: 25px;
+	border-top-right-radius: 25px;
+}
+
+.list {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	gap: 5px;
+}
+
+.draggable {
+	/* width: fit-content; */
+	display: flex;
+}
+
+.item {
+	box-shadow: 0px 1px 2px 1px #000;
+	padding-inline: 5px;
+}
+
+.drag-icon {
+	cursor: pointer;
+	position: relative;
+	width: 25px;
+}
+
+.add {
+	margin-top: 10px;
+}
+
+.add-button {
+	background-color: transparent;
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	margin-left: 8px;
+	margin-top: 8px;
+	cursor: pointer;
+}
+
+.add-input {
+	background-color: transparent;
+	border: 1px dashed black;
+	margin-left: 8px;
+	outline: none;
+	padding: 2px 5px;
+
+	&:focus {
+		border: 2px solid black;
+	}
+}

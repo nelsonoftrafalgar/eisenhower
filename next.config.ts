@@ -1,7 +1,16 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+	distDir: './dist', // Changes the build output directory to `./dist/`.
+	webpack(config: NextConfig) {
+		config.module.rules.push({
+			test: /\.svg$/i,
+			issuer: /\.[jt]sx?$/,
+			use: ['@svgr/webpack']
+		})
+		return config
+	}
+}
 
-export default nextConfig;
+export default nextConfig
