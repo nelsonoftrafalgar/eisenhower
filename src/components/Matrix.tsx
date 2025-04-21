@@ -345,17 +345,7 @@ export function Matrix() {
 			}}
 			onDragCancel={onDragCancel}
 		>
-			<div
-				style={{
-					backgroundColor: '#262626',
-					display: 'grid',
-					boxSizing: 'border-box',
-					gap: '20px',
-					gridTemplateColumns: '1fr 1fr',
-					gridTemplateRows: '1fr 1fr',
-					height: '100%'
-				}}
-			>
+			<div className='matrix'>
 				<SortableContext
 					items={[...containers, PLACEHOLDER_ID]}
 					strategy={horizontalListSortingStrategy}
