@@ -1,5 +1,14 @@
-import React, { useEffect } from 'react'
+import React, {
+	ChangeEventHandler,
+	KeyboardEventHandler,
+	ReactNode,
+	forwardRef,
+	useEffect,
+	useRef,
+	useState
+} from 'react'
 
+import Delete from '../../assets/delete.svg'
 import DragHandle from '../../assets/drag-handle.svg'
 import type { DraggableSyntheticListeners } from '@dnd-kit/core'
 import Image from 'next/image'
@@ -15,10 +24,12 @@ export interface Props {
 	style?: React.CSSProperties
 	transition?: string | null
 	value: React.ReactNode
+	handleDeleteItem?: (item: ReactNode) => void
+	handleEditItem?: (item: ReactNode) => void
 }
 
 export const Item = React.memo(
-	React.forwardRef<HTMLLIElement, Props>(
+	forwardRef<HTMLLIElement, Props>(
 		(
 			{
 				dragOverlay,
@@ -28,10 +39,16 @@ export const Item = React.memo(
 				transition,
 				transform,
 				value,
+				handleDeleteItem,
+				handleEditItem,
 				...props
 			},
 			ref
 		) => {
+			const inputRef = useRef<HTMLInputElement>(null)
+			const [isEditMode, setIsEditMode] = useState(false)
+			const [inputValue, setInputValue] = useState(value?.toString())
+
 			useEffect(() => {
 				if (!dragOverlay) {
 					return
@@ -43,6 +60,33 @@ export const Item = React.memo(
 					document.body.style.cursor = ''
 				}
 			}, [dragOverlay])
+
+			useEffect(() => {
+				if (isEditMode && inputRef.current) {
+					inputRef.current.focus()
+				}
+			}, [isEditMode])
+
+			const openEditMode = () => setIsEditMode(true)
+
+			const handleValueChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+				setInputValue(e.target.value)
+			}
+
+			const handleItemSave = () => {
+				handleEditItem?.(inputValue)
+			}
+
+			const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
+				if (e.key === 'Enter') {
+					handleItemSave()
+				}
+
+				if (e.key === 'Escape') {
+					setInputValue(value?.toString())
+					setIsEditMode(false)
+				}
+			}
 
 			return (
 				<li
@@ -60,10 +104,32 @@ export const Item = React.memo(
 					ref={ref}
 				>
 					<div {...listeners} tabIndex={0} className='drag-icon'>
-						<Image fill src={DragHandle} alt='' />
+						<Image fill src={DragHandle} alt='Drag and drop icon' />
 					</div>
 					<div className={classNames(styles.item)} style={style} {...props}>
-						{value}
+						{isEditMode ? (
+							<input
+								ref={inputRef}
+								className={styles.editInput}
+								type='text'
+								value={inputValue}
+								onBlur={handleItemSave}
+								onChange={handleValueChange}
+								onKeyDown={handleKeyDown}
+							/>
+						) : (
+							<span onClick={openEditMode} className={styles.value}>
+								{value}
+							</span>
+						)}
+						<div className={styles.menu}>
+							<div
+								onClick={() => handleDeleteItem?.(value)}
+								className={styles.menuIcon}
+							>
+								<Image width={15} height={15} src={Delete} alt='Delete icon' />
+							</div>
+						</div>
 					</div>
 				</li>
 			)

@@ -28,7 +28,13 @@ import {
 	useSensors
 } from '@dnd-kit/core'
 import Container, { ContainerProps } from './components/Container'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, {
+	ReactNode,
+	useCallback,
+	useEffect,
+	useRef,
+	useState
+} from 'react'
 import { createPortal, unstable_batchedUpdates } from 'react-dom'
 
 import { Add } from '@/components/Add'
@@ -222,6 +228,25 @@ export function MultipleContainers() {
 		})
 	}
 
+	const handleDeleteItem = (category: UniqueIdentifier) => (item: ReactNode) => {
+		setItems((prev) => {
+			return {
+				...prev,
+				[category]: prev[category].filter((el) => el !== item)
+			}
+		})
+	}
+
+	const handleEditItem =
+		(category: UniqueIdentifier, index: number) => (item: ReactNode) => {
+			setItems((prev) => {
+				return {
+					...prev,
+					[category]: prev[category].map((el, id) => (id === index ? item : el))
+				}
+			})
+		}
+
 	return (
 		<DndContext
 			sensors={sensors}
@@ -388,7 +413,8 @@ export function MultipleContainers() {
 											key={value}
 											id={value}
 											index={index}
-											handle={false}
+											handleDeleteItem={handleDeleteItem(containerId)}
+											handleEditItem={handleEditItem(containerId, index)}
 										/>
 									)
 								})}
@@ -418,11 +444,18 @@ export function MultipleContainers() {
 interface SortableItemProps {
 	id: UniqueIdentifier
 	index: number
-	handle: boolean
 	disabled?: boolean
+	handleDeleteItem: (item: ReactNode) => void
+	handleEditItem: (item: ReactNode) => void
 }
 
-function SortableItem({ disabled, id, index }: SortableItemProps) {
+function SortableItem({
+	disabled,
+	id,
+	index,
+	handleDeleteItem,
+	handleEditItem
+}: SortableItemProps) {
 	const { setNodeRef, listeners, transform, transition } = useSortable({
 		id
 	})
@@ -435,6 +468,8 @@ function SortableItem({ disabled, id, index }: SortableItemProps) {
 			transition={transition}
 			transform={transform}
 			listeners={listeners}
+			handleDeleteItem={handleDeleteItem}
+			handleEditItem={handleEditItem}
 		/>
 	)
 }
