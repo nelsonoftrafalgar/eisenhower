@@ -12,8 +12,8 @@ import React, {
 	useState
 } from 'react'
 
-import Delete from '../../assets/delete.svg'
-import DragHandle from '../../assets/drag-handle.svg'
+import Delete from '../assets/delete.svg'
+import DragHandle from '../assets/drag-handle.svg'
 import Image from 'next/image'
 import type { Transform } from '@dnd-kit/utilities'
 import classNames from 'classnames'

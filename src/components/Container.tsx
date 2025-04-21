@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react'
 
-import ClearAll from '../../assets/clear-all.svg'
+import ClearAll from '../assets/clear-all.svg'
 import Image from 'next/image'
 import { UniqueIdentifier } from '@dnd-kit/core'
 import classNames from 'classnames'

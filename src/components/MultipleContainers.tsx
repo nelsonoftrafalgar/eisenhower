@@ -27,7 +27,7 @@ import {
 	useSensor,
 	useSensors
 } from '@dnd-kit/core'
-import Container, { ContainerProps } from './components/Container'
+import Container, { ContainerProps } from './Container'
 import React, {
 	ReactNode,
 	useCallback,
@@ -39,7 +39,7 @@ import { createPortal, unstable_batchedUpdates } from 'react-dom'
 
 import { Add } from '@/components/Add'
 import { CSS } from '@dnd-kit/utilities'
-import { Item } from './components/Item'
+import { Item } from './Item'
 import { coordinateGetter as multipleContainersCoordinateGetter } from './coordinatesGetter'
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
