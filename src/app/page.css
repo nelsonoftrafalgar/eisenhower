@@ -58,10 +58,8 @@
 	cursor: grab;
 	position: relative;
 	width: 25px;
-}
-
-.add {
-	margin-top: 10px;
+	height: 25px;
+	flex-shrink: 0;
 }
 
 .add-button {

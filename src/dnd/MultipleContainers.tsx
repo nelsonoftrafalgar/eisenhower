@@ -3,7 +3,6 @@
 import {
 	AnimateLayoutChanges,
 	SortableContext,
-	SortingStrategy,
 	arrayMove,
 	defaultAnimateLayoutChanges,
 	horizontalListSortingStrategy,
@@ -11,15 +10,12 @@ import {
 	verticalListSortingStrategy
 } from '@dnd-kit/sortable'
 import {
-	CancelDrop,
 	CollisionDetection,
 	DndContext,
 	DragOverlay,
 	DropAnimation,
-	KeyboardCoordinateGetter,
 	KeyboardSensor,
 	MeasuringStrategy,
-	Modifiers,
 	MouseSensor,
 	TouchSensor,
 	UniqueIdentifier,
@@ -35,18 +31,10 @@ import Container, { ContainerProps } from './components/Container'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal, unstable_batchedUpdates } from 'react-dom'
 
+import { Add } from '@/components/Add'
 import { CSS } from '@dnd-kit/utilities'
 import { Item } from './components/Item'
 import { coordinateGetter as multipleContainersCoordinateGetter } from './coordinatesGetter'
-
-const defaultInitializer = (index: number) => index
-
-export function createRange<T = number>(
-	length: number,
-	initializer: (index: number) => any = defaultInitializer
-): T[] {
-	return [...new Array(length)].map((_, index) => initializer(index))
-}
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
 	defaultAnimateLayoutChanges({ ...args, wasDragging: true })
@@ -104,53 +92,15 @@ const dropAnimation: DropAnimation = {
 
 type Items = Record<UniqueIdentifier, UniqueIdentifier[]>
 
-interface Props {
-	adjustScale?: boolean
-	cancelDrop?: CancelDrop
-	columns?: number
-	containerStyle?: React.CSSProperties
-	coordinateGetter?: KeyboardCoordinateGetter
-	getItemStyles?(args: {
-		value: UniqueIdentifier
-		index: number
-		overIndex: number
-		isDragging: boolean
-		containerId: UniqueIdentifier
-		isSorting: boolean
-		isDragOverlay: boolean
-	}): React.CSSProperties
-	wrapperStyle?(args: { index: number }): React.CSSProperties
-	itemCount?: number
-	handle?: boolean
-	strategy?: SortingStrategy
-	modifiers?: Modifiers
-	minimal?: boolean
-	scrollable?: boolean
-	vertical?: boolean
-}
-
 export const TRASH_ID = 'void'
 const PLACEHOLDER_ID = 'placeholder'
 
-export function MultipleContainers({
-	adjustScale = false,
-	itemCount = 3,
-	cancelDrop,
-	columns,
-	handle = false,
-	containerStyle,
-	coordinateGetter = multipleContainersCoordinateGetter,
-	getItemStyles = () => ({}),
-	wrapperStyle = () => ({}),
-	modifiers,
-	strategy = verticalListSortingStrategy,
-	vertical = false
-}: Props) {
+export function MultipleContainers() {
 	const [items, setItems] = useState<Items>(() => ({
-		do: createRange(itemCount, (index) => `A${index + 1}`),
-		schedule: createRange(itemCount, (index) => `B${index + 1}`),
-		delegate: createRange(itemCount, (index) => `C${index + 1}`),
-		delete: createRange(itemCount, (index) => `D${index + 1}`)
+		do: ['go to work', 'dupa', 'hui'],
+		schedule: ['meet friends'],
+		delegate: ['call grandma'],
+		delete: ['walk the dog']
 	}))
 	const [containers, setContainers] = useState(
 		Object.keys(items) as UniqueIdentifier[]
@@ -235,7 +185,7 @@ export function MultipleContainers({
 		useSensor(MouseSensor),
 		useSensor(TouchSensor),
 		useSensor(KeyboardSensor, {
-			coordinateGetter
+			coordinateGetter: multipleContainersCoordinateGetter
 		})
 	)
 	const findContainer = (id: UniqueIdentifier) => {
@@ -244,18 +194,6 @@ export function MultipleContainers({
 		}
 
 		return Object.keys(items).find((key) => items[key].includes(id))
-	}
-
-	const getIndex = (id: UniqueIdentifier) => {
-		const container = findContainer(id)
-
-		if (!container) {
-			return -1
-		}
-
-		const index = items[container].indexOf(id)
-
-		return index
 	}
 
 	const onDragCancel = () => {
@@ -274,6 +212,15 @@ export function MultipleContainers({
 			recentlyMovedToNewContainer.current = false
 		})
 	}, [items])
+
+	const handleAddItem = (category: UniqueIdentifier) => (item: string) => {
+		setItems((prev) => {
+			return {
+				...prev,
+				[category]: [...prev[category], item]
+			}
+		})
+	}
 
 	return (
 		<DndContext
@@ -406,9 +353,7 @@ export function MultipleContainers({
 
 				setActiveId(null)
 			}}
-			cancelDrop={cancelDrop}
 			onDragCancel={onDragCancel}
-			modifiers={modifiers}
 		>
 			<div
 				style={{
@@ -424,19 +369,18 @@ export function MultipleContainers({
 			>
 				<SortableContext
 					items={[...containers, PLACEHOLDER_ID]}
-					strategy={
-						vertical ? verticalListSortingStrategy : horizontalListSortingStrategy
-					}
+					strategy={horizontalListSortingStrategy}
 				>
 					{containers.map((containerId) => (
 						<DroppableContainer
 							key={containerId}
 							id={containerId}
-							columns={columns}
 							items={items[containerId]}
-							style={containerStyle}
 						>
-							<SortableContext items={items[containerId]} strategy={strategy}>
+							<SortableContext
+								items={items[containerId]}
+								strategy={verticalListSortingStrategy}
+							>
 								{items[containerId].map((value, index) => {
 									return (
 										<SortableItem
@@ -444,38 +388,19 @@ export function MultipleContainers({
 											key={value}
 											id={value}
 											index={index}
-											handle={handle}
-											style={getItemStyles}
-											wrapperStyle={wrapperStyle}
-											containerId={containerId}
-											getIndex={getIndex}
+											handle={false}
 										/>
 									)
 								})}
+								<Add handleAddItem={handleAddItem(containerId)} />
 							</SortableContext>
 						</DroppableContainer>
 					))}
 				</SortableContext>
 			</div>
 			{createPortal(
-				<DragOverlay adjustScale={adjustScale} dropAnimation={dropAnimation}>
-					{activeId && (
-						<Item
-							value={activeId}
-							style={getItemStyles({
-								containerId: findContainer(activeId) as UniqueIdentifier,
-								overIndex: -1,
-								index: getIndex(activeId),
-								value: activeId,
-								isSorting: true,
-								isDragging: true,
-								isDragOverlay: true
-							})}
-							color={getColor(activeId)}
-							wrapperStyle={wrapperStyle({ index: 0 })}
-							dragOverlay
-						/>
-					)}
+				<DragOverlay adjustScale={false} dropAnimation={dropAnimation}>
+					{activeId && <Item value={activeId} dragOverlay />}
 				</DragOverlay>,
 				document.body
 			)}
@@ -490,51 +415,15 @@ export function MultipleContainers({
 	}
 }
 
-function getColor(id: UniqueIdentifier) {
-	switch (String(id)[0]) {
-		case 'A':
-			return '#7193f1'
-		case 'B':
-			return '#ffda6c'
-		case 'C':
-			return '#00bcd4'
-		case 'D':
-			return '#ef769f'
-	}
-
-	return undefined
-}
-
 interface SortableItemProps {
-	containerId: UniqueIdentifier
 	id: UniqueIdentifier
 	index: number
 	handle: boolean
 	disabled?: boolean
-	style(args: any): React.CSSProperties
-	getIndex(id: UniqueIdentifier): number
-	wrapperStyle({ index }: { index: number }): React.CSSProperties
 }
 
-function SortableItem({
-	disabled,
-	id,
-	index,
-	style,
-	containerId,
-	getIndex,
-	wrapperStyle
-}: SortableItemProps) {
-	const {
-		setNodeRef,
-		listeners,
-		isDragging,
-		isSorting,
-		over,
-		overIndex,
-		transform,
-		transition
-	} = useSortable({
+function SortableItem({ disabled, id, index }: SortableItemProps) {
+	const { setNodeRef, listeners, transform, transition } = useSortable({
 		id
 	})
 
@@ -543,16 +432,6 @@ function SortableItem({
 			ref={disabled ? undefined : setNodeRef}
 			value={id}
 			index={index}
-			wrapperStyle={wrapperStyle({ index })}
-			style={style({
-				index,
-				value: id,
-				isDragging,
-				isSorting,
-				overIndex: over ? getIndex(over.id) : overIndex,
-				containerId
-			})}
-			color={getColor(id)}
 			transition={transition}
 			transform={transform}
 			listeners={listeners}

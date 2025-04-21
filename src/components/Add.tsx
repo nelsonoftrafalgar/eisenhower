@@ -46,7 +46,7 @@ export const Add = ({ handleAddItem }: AddProps) => {
 	}, [addMode])
 
 	return (
-		<div className='add'>
+		<div>
 			{addMode ? (
 				<input
 					ref={inputRef}
