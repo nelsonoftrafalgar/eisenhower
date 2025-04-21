@@ -238,7 +238,7 @@ export function MultipleContainers() {
 	}
 
 	const handleEditItem =
-		(category: UniqueIdentifier, index: number) => (item: ReactNode) => {
+		(category: UniqueIdentifier, index: number) => (item: UniqueIdentifier) => {
 			setItems((prev) => {
 				return {
 					...prev,
@@ -246,6 +246,10 @@ export function MultipleContainers() {
 				}
 			})
 		}
+
+	const handleClearAll = (category: UniqueIdentifier) => () => {
+		setItems((prev) => ({ ...prev, [category]: [] }))
+	}
 
 	return (
 		<DndContext
@@ -401,6 +405,7 @@ export function MultipleContainers() {
 							key={containerId}
 							id={containerId}
 							items={items[containerId]}
+							handleClearAll={handleClearAll(containerId)}
 						>
 							<SortableContext
 								items={items[containerId]}
@@ -446,7 +451,7 @@ interface SortableItemProps {
 	index: number
 	disabled?: boolean
 	handleDeleteItem: (item: ReactNode) => void
-	handleEditItem: (item: ReactNode) => void
+	handleEditItem: (item: UniqueIdentifier) => void
 }
 
 function SortableItem({

@@ -1,3 +1,7 @@
+import type {
+	DraggableSyntheticListeners,
+	UniqueIdentifier
+} from '@dnd-kit/core'
 import React, {
 	ChangeEventHandler,
 	KeyboardEventHandler,
@@ -10,7 +14,6 @@ import React, {
 
 import Delete from '../../assets/delete.svg'
 import DragHandle from '../../assets/drag-handle.svg'
-import type { DraggableSyntheticListeners } from '@dnd-kit/core'
 import Image from 'next/image'
 import type { Transform } from '@dnd-kit/utilities'
 import classNames from 'classnames'
@@ -25,7 +28,7 @@ export interface Props {
 	transition?: string | null
 	value: React.ReactNode
 	handleDeleteItem?: (item: ReactNode) => void
-	handleEditItem?: (item: ReactNode) => void
+	handleEditItem?: (item: UniqueIdentifier) => void
 }
 
 export const Item = React.memo(
@@ -74,7 +77,7 @@ export const Item = React.memo(
 			}
 
 			const handleItemSave = () => {
-				handleEditItem?.(inputValue)
+				handleEditItem?.(inputValue as UniqueIdentifier)
 			}
 
 			const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {

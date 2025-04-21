@@ -51,3 +51,19 @@
 	border-bottom-left-radius: 25px;
 	border-top-right-radius: 25px;
 }
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-inline: 5px;
+}
+
+.clearAllButton {
+	background-color: transparent;
+	outline: none;
+
+	&:focus {
+		border: 1px solid black;
+	}
+}
