@@ -60,10 +60,11 @@
 }
 
 .clearAllButton {
+	cursor: pointer;
 	background-color: transparent;
 	outline: none;
 
-	&:focus {
+	&:focus-visible {
 		border: 1px solid black;
 	}
 }

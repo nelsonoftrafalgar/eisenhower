@@ -78,6 +78,7 @@ export const Item = React.memo(
 
 			const handleItemSave = () => {
 				handleEditItem?.(inputValue as UniqueIdentifier)
+				setIsEditMode(false)
 			}
 
 			const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {

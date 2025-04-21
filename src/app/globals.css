@@ -9,4 +9,5 @@ body {
 	height: 100vh;
 	width: 100vw;
 	font-family: var(--font-geist-mono);
+	background-color: #262626;
 }

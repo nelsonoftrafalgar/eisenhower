@@ -389,7 +389,6 @@ export function MultipleContainers() {
 					backgroundColor: '#262626',
 					display: 'grid',
 					boxSizing: 'border-box',
-					padding: 20,
 					gap: '20px',
 					gridTemplateColumns: '1fr 1fr',
 					gridTemplateRows: '1fr 1fr',
