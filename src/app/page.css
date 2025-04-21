@@ -83,7 +83,12 @@
 
 .grid {
 	grid-area: grid;
-	height: 100%;
+	height: 150%;
+
+	@media screen and (min-width: 600px) {
+		display: flex;
+		height: 100%;
+	}
 }
 
 .not-important {
