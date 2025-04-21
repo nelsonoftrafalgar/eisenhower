@@ -389,12 +389,13 @@ export function Matrix() {
 					))}
 				</SortableContext>
 			</div>
-			{createPortal(
-				<DragOverlay adjustScale={false} dropAnimation={dropAnimation}>
-					{activeId && <Item value={activeId} dragOverlay />}
-				</DragOverlay>,
-				document.body
-			)}
+			{typeof window === 'object' &&
+				createPortal(
+					<DragOverlay adjustScale={false} dropAnimation={dropAnimation}>
+						{activeId && <Item value={activeId} dragOverlay />}
+					</DragOverlay>,
+					document.body
+				)}
 		</DndContext>
 	)
 

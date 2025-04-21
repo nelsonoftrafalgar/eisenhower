@@ -1,10 +1,16 @@
+'use client'
+
 import { Items } from '@/components/Matrix'
 
 export const saveMatrixToStorage = (items: Items) => {
-	localStorage.setItem('eisenhower-matrix', JSON.stringify(items))
+	if (typeof window === 'object') {
+		localStorage.setItem('eisenhower-matrix', JSON.stringify(items))
+	}
 }
 
-export const getMatrixFromStorage = (): Items | null => {
-	const matrix = localStorage.getItem('eisenhower-matrix')
-	return matrix ? JSON.parse(matrix) : null
+export const getMatrixFromStorage = (): Items | undefined => {
+	if (typeof window === 'object') {
+		const matrix = localStorage.getItem('eisenhower-matrix')
+		return matrix ? JSON.parse(matrix) : undefined
+	}
 }
