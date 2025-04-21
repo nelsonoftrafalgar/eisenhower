@@ -58,11 +58,13 @@
 
 .drag-icon {
 	cursor: grab;
-	position: relative;
 	width: 25px;
 	height: 25px;
 	flex-shrink: 0;
 	outline: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 
 	&:focus-visible {
 		border: 1px solid white;
@@ -78,6 +80,7 @@
 	margin-top: 8px;
 	cursor: pointer;
 	outline: none;
+	color: black;
 
 	&:focus-visible {
 		border: 1px solid white;
@@ -223,6 +226,7 @@
 	position: relative;
 	gap: 5px;
 	padding-inline: 5px;
+	padding-top: 3px;
 }
 
 .menu-icon {

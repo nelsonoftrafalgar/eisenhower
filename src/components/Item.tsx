@@ -12,9 +12,8 @@ import React, {
 	useState
 } from 'react'
 
-import Delete from '../assets/delete.svg'
-import DragHandle from '../assets/drag-handle.svg'
-import Image from 'next/image'
+import { Delete } from '../icons/Delete'
+import { DragHandle } from '../icons/DragHandle'
 import type { Transform } from '@dnd-kit/utilities'
 
 export interface Props {
@@ -107,7 +106,7 @@ export const Item = React.memo(
 					ref={ref}
 				>
 					<div {...listeners} tabIndex={0} className='drag-icon'>
-						<Image fill src={DragHandle} alt='Drag and drop icon' />
+						<DragHandle />
 					</div>
 					<div className='item' style={style} {...props}>
 						{isEditMode ? (
@@ -132,7 +131,7 @@ export const Item = React.memo(
 						)}
 						<div className='menu'>
 							<button onClick={() => handleDeleteItem?.(value)} className='menu-icon'>
-								<Image width={15} height={15} src={Delete} alt='Delete icon' />
+								<Delete />
 							</button>
 						</div>
 					</div>
