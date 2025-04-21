@@ -2,6 +2,7 @@ import './globals.css'
 
 import { Geist, Geist_Mono } from 'next/font/google'
 
+import { GoogleAnalytics } from '@next/third-parties/google'
 import type { Metadata } from 'next'
 
 const geistSans = Geist({
@@ -52,6 +53,9 @@ export const metadata: Metadata = {
 	},
 	alternates: {
 		canonical: 'https://eisenhowermatrix.org'
+	},
+	verification: {
+		google: 'kyCqMEY3EdvTgZFHIxnqbPEY8a3B-ttlta2IQ38KcG4'
 	}
 }
 
@@ -60,11 +64,13 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode
 }>) {
+	const gaId = process.env.NODE_ENV === 'production' ? 'G-ZW72YKZTET' : ''
 	return (
 		<html lang='en'>
 			<body className={`${geistSans.variable} ${geistMono.variable}`}>
 				{children}
 			</body>
+			<GoogleAnalytics gaId={gaId} />
 		</html>
 	)
 }
