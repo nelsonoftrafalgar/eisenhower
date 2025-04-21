@@ -16,8 +16,6 @@ import Delete from '../assets/delete.svg'
 import DragHandle from '../assets/drag-handle.svg'
 import Image from 'next/image'
 import type { Transform } from '@dnd-kit/utilities'
-import classNames from 'classnames'
-import styles from './Item.module.css'
 
 export interface Props {
 	dragOverlay?: boolean
@@ -94,7 +92,7 @@ export const Item = React.memo(
 
 			return (
 				<li
-					className={classNames(styles.wrapper)}
+					className='wrapper'
 					style={
 						{
 							transition: [transition].filter(Boolean).join(', '),
@@ -110,11 +108,11 @@ export const Item = React.memo(
 					<div {...listeners} tabIndex={0} className='drag-icon'>
 						<Image fill src={DragHandle} alt='Drag and drop icon' />
 					</div>
-					<div className={classNames(styles.item)} style={style} {...props}>
+					<div className='item' style={style} {...props}>
 						{isEditMode ? (
 							<input
 								ref={inputRef}
-								className={styles.editInput}
+								className='edit-input'
 								type='text'
 								value={inputValue}
 								onBlur={handleItemSave}
@@ -122,17 +120,19 @@ export const Item = React.memo(
 								onKeyDown={handleKeyDown}
 							/>
 						) : (
-							<span onClick={openEditMode} className={styles.value}>
+							<span
+								tabIndex={0}
+								onKeyDown={openEditMode}
+								onClick={openEditMode}
+								className='value'
+							>
 								{value}
 							</span>
 						)}
-						<div className={styles.menu}>
-							<div
-								onClick={() => handleDeleteItem?.(value)}
-								className={styles.menuIcon}
-							>
+						<div className='menu'>
+							<button onClick={() => handleDeleteItem?.(value)} className='menu-icon'>
 								<Image width={15} height={15} src={Delete} alt='Delete icon' />
-							</div>
+							</button>
 						</div>
 					</div>
 				</li>

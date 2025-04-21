@@ -3,8 +3,6 @@ import React, { forwardRef } from 'react'
 import ClearAll from '../assets/clear-all.svg'
 import Image from 'next/image'
 import { UniqueIdentifier } from '@dnd-kit/core'
-import classNames from 'classnames'
-import styles from './Container.module.css'
 
 export interface ContainerProps {
 	children: React.ReactNode
@@ -36,11 +34,11 @@ const Container = forwardRef<HTMLDivElement, ContainerProps>(
 						'--columns': columns
 					} as React.CSSProperties
 				}
-				className={classNames(styles.container, styles[id])}
+				className={`container ${id}`}
 			>
-				<div className={styles.header}>
+				<div className='header'>
 					<h2>{id.toString().toUpperCase()}</h2>
-					<button onClick={handleClearAll} className={styles.clearAllButton}>
+					<button onClick={handleClearAll} className='clear-all-button'>
 						<Image width={15} height={15} src={ClearAll} alt='Clear all icon' />
 					</button>
 				</div>
