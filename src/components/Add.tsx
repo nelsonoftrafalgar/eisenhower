@@ -25,6 +25,7 @@ export const Add = ({ handleAddItem }: AddProps) => {
 
 	const handleBlur = () => {
 		setAddMode(false)
+		handleAddItem(value)
 		setValue('')
 	}
 

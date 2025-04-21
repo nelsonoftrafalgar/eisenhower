@@ -75,6 +75,7 @@ export const Item = React.memo(
 			}
 
 			const handleItemSave = () => {
+				console.log('handleItemSave')
 				handleEditItem?.(inputValue as UniqueIdentifier)
 				setIsEditMode(false)
 			}

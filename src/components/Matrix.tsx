@@ -1,15 +1,6 @@
 'use client'
 
 import {
-	AnimateLayoutChanges,
-	SortableContext,
-	arrayMove,
-	defaultAnimateLayoutChanges,
-	horizontalListSortingStrategy,
-	useSortable,
-	verticalListSortingStrategy
-} from '@dnd-kit/sortable'
-import {
 	CollisionDetection,
 	DndContext,
 	DragOverlay,
@@ -27,7 +18,6 @@ import {
 	useSensor,
 	useSensors
 } from '@dnd-kit/core'
-import Container, { ContainerProps } from './Container'
 import React, {
 	ReactNode,
 	useCallback,
@@ -35,56 +25,20 @@ import React, {
 	useRef,
 	useState
 } from 'react'
+import {
+	SortableContext,
+	arrayMove,
+	horizontalListSortingStrategy,
+	verticalListSortingStrategy
+} from '@dnd-kit/sortable'
 import { createPortal, unstable_batchedUpdates } from 'react-dom'
+import { getMatrixFromStorage, saveMatrixToStorage } from '@/utils/storage'
 
 import { Add } from '@/components/Add'
-import { CSS } from '@dnd-kit/utilities'
+import { DroppableContainer } from './DroppableContainer'
 import { Item } from './Item'
-import { coordinateGetter as multipleContainersCoordinateGetter } from './coordinatesGetter'
-
-const animateLayoutChanges: AnimateLayoutChanges = (args) =>
-	defaultAnimateLayoutChanges({ ...args, wasDragging: true })
-
-function DroppableContainer({
-	children,
-	columns = 1,
-	disabled,
-	id,
-	items,
-	style,
-	...props
-}: ContainerProps & {
-	disabled?: boolean
-	id: UniqueIdentifier
-	items: UniqueIdentifier[]
-	style?: React.CSSProperties
-}) {
-	const { isDragging, setNodeRef, transition, transform } = useSortable({
-		id,
-		data: {
-			type: 'container',
-			children: items
-		},
-		animateLayoutChanges
-	})
-
-	return (
-		<Container
-			ref={disabled ? undefined : setNodeRef}
-			style={{
-				...style,
-				transition,
-				transform: CSS.Translate.toString(transform),
-				opacity: isDragging ? 0.5 : undefined
-			}}
-			columns={columns}
-			id={id}
-			{...props}
-		>
-			{children}
-		</Container>
-	)
-}
+import { SortableItem } from './SortableItem'
+import { coordinateGetter as multipleContainersCoordinateGetter } from '../utils/coordinatesGetter'
 
 const dropAnimation: DropAnimation = {
 	sideEffects: defaultDropAnimationSideEffects({
@@ -96,18 +50,21 @@ const dropAnimation: DropAnimation = {
 	})
 }
 
-type Items = Record<UniqueIdentifier, UniqueIdentifier[]>
+export type Items = Record<UniqueIdentifier, UniqueIdentifier[]>
 
 export const TRASH_ID = 'void'
 const PLACEHOLDER_ID = 'placeholder'
 
-export function MultipleContainers() {
-	const [items, setItems] = useState<Items>(() => ({
-		do: ['go to work', 'dupa', 'hui'],
-		schedule: ['meet friends'],
-		delegate: ['call grandma'],
-		delete: ['walk the dog']
-	}))
+export function Matrix() {
+	const [items, setItems] = useState<Items>(
+		() =>
+			getMatrixFromStorage() ?? {
+				do: [],
+				schedule: [],
+				delegate: [],
+				delete: []
+			}
+	)
 	const [containers, setContainers] = useState(
 		Object.keys(items) as UniqueIdentifier[]
 	)
@@ -250,6 +207,10 @@ export function MultipleContainers() {
 	const handleClearAll = (category: UniqueIdentifier) => () => {
 		setItems((prev) => ({ ...prev, [category]: [] }))
 	}
+
+	useEffect(() => {
+		saveMatrixToStorage(items)
+	}, [items])
 
 	return (
 		<DndContext
@@ -443,37 +404,4 @@ export function MultipleContainers() {
 
 		return String.fromCharCode(lastContainerId.charCodeAt(0) + 1)
 	}
-}
-
-interface SortableItemProps {
-	id: UniqueIdentifier
-	index: number
-	disabled?: boolean
-	handleDeleteItem: (item: ReactNode) => void
-	handleEditItem: (item: UniqueIdentifier) => void
-}
-
-function SortableItem({
-	disabled,
-	id,
-	index,
-	handleDeleteItem,
-	handleEditItem
-}: SortableItemProps) {
-	const { setNodeRef, listeners, transform, transition } = useSortable({
-		id
-	})
-
-	return (
-		<Item
-			ref={disabled ? undefined : setNodeRef}
-			value={id}
-			index={index}
-			transition={transition}
-			transform={transform}
-			listeners={listeners}
-			handleDeleteItem={handleDeleteItem}
-			handleEditItem={handleEditItem}
-		/>
-	)
 }

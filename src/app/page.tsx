@@ -1,6 +1,6 @@
 import './page.css'
 
-import { MultipleContainers } from '@/components/MultipleContainers'
+import { Matrix } from '@/components/Matrix'
 
 export default function Home() {
 	return (
@@ -10,7 +10,7 @@ export default function Home() {
 				<span>URGENT</span>
 			</div>
 			<div className='grid'>
-				<MultipleContainers />
+				<Matrix />
 			</div>
 			<div className='not-urgent'>
 				<span>NOT URGENT</span>
