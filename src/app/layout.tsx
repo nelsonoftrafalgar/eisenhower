@@ -20,11 +20,11 @@ const metadataBase = new URL('https://eisenhowermatrix.org')
 export const metadata: Metadata = {
 	metadataBase,
 	title: {
-		default: 'Eisenhower Matrix',
+		default: 'Free Online Eisenhower Matrix | No Login Required',
 		template: '%s | Eisenhower Matrix'
 	},
 	description:
-		'Easily organize your tasks by urgency and importance using the Eisenhower Matrix. Prioritize what truly matters and boost your productivity.',
+		'Use the free online Eisenhower Matrix to manage your tasks by urgency and importance — no login required. This priority matrix helps you improve time management and boost productivity through smart task prioritization.',
 	keywords: [
 		'eisenhower matrix',
 		'priority matrix',
@@ -32,12 +32,14 @@ export const metadata: Metadata = {
 		'productivity',
 		'prioritization',
 		'time management',
-		'urgency vs importance'
+		'urgency vs importance',
+		'free online',
+		'no login required'
 	],
 	openGraph: {
-		title: 'Eisenhower Matrix',
+		title: 'Free Online Eisenhower Matrix | No Login Required',
 		description:
-			'Organize tasks by urgency and importance. Maximize your time with the Eisenhower Matrix.',
+			'Organize tasks by urgency and importance. Maximize your productivity with the Eisenhower Matrix.',
 		siteName: 'Eisenhower Matrix',
 		type: 'website',
 		url: 'https://eisenhowermatrix.org',
