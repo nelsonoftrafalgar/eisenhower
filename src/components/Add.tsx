@@ -6,6 +6,8 @@ import React, {
 	useState
 } from 'react'
 
+import { saveDateToStorage } from '@/utils/storage'
+
 interface AddProps {
 	handleAddItem: (item: string) => void
 }
@@ -23,17 +25,16 @@ export const Add = ({ handleAddItem }: AddProps) => {
 		setValue(e.currentTarget.value)
 	}
 
-	const handleBlur = () => {
+	const addItem = () => {
 		setAddMode(false)
 		handleAddItem(value)
 		setValue('')
+		saveDateToStorage(value)
 	}
 
 	const handleAdd: KeyboardEventHandler<HTMLInputElement> = (e) => {
 		if (e.key === 'Enter') {
-			setAddMode(false)
-			handleAddItem(value)
-			setValue('')
+			addItem()
 		}
 
 		if (e.key === 'Escape') {
@@ -54,7 +55,7 @@ export const Add = ({ handleAddItem }: AddProps) => {
 					onChange={handleInputChange}
 					value={value}
 					onKeyDown={handleAdd}
-					onBlur={handleBlur}
+					onBlur={addItem}
 					className='add-input'
 					type='text'
 				/>

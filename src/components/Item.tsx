@@ -11,6 +11,11 @@ import React, {
 	useRef,
 	useState
 } from 'react'
+import {
+	getDateFromStorage,
+	removeDateFromStorage,
+	updateDateInStorage
+} from '@/utils/storage'
 
 import { Delete } from '../icons/Delete'
 import { DragHandle } from '../icons/DragHandle'
@@ -49,6 +54,8 @@ export const Item = React.memo(
 			const [isEditMode, setIsEditMode] = useState(false)
 			const [inputValue, setInputValue] = useState(value?.toString())
 
+			const dateAdded = getDateFromStorage(value as string)
+
 			useEffect(() => {
 				if (!dragOverlay) {
 					return
@@ -74,9 +81,9 @@ export const Item = React.memo(
 			}
 
 			const handleItemSave = () => {
-				console.log('handleItemSave')
 				handleEditItem?.(inputValue as UniqueIdentifier)
 				setIsEditMode(false)
+				updateDateInStorage(value as string, inputValue!)
 			}
 
 			const handleKeyDown: KeyboardEventHandler<HTMLInputElement> = (e) => {
@@ -88,6 +95,11 @@ export const Item = React.memo(
 					setInputValue(value?.toString())
 					setIsEditMode(false)
 				}
+			}
+
+			const deleteItem = () => {
+				handleDeleteItem?.(value)
+				removeDateFromStorage(value as string)
 			}
 
 			return (
@@ -125,12 +137,13 @@ export const Item = React.memo(
 								onKeyDown={openEditMode}
 								onClick={openEditMode}
 								className='value'
+								data-date={dateAdded}
 							>
 								{value}
 							</span>
 						)}
 						<div className='menu'>
-							<button onClick={() => handleDeleteItem?.(value)} className='menu-icon'>
+							<button onClick={deleteItem} className='menu-icon'>
 								<Delete />
 							</button>
 						</div>

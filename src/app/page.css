@@ -18,7 +18,7 @@
 
 	@media screen and (min-width: 600px) {
 		grid-template-columns: 50px auto 50px;
-		grid-template-rows: 50px auto 50px;
+		grid-template-rows: 50px calc(100% - 120px) 50px;
 		grid-template-areas:
 			'important important important'
 			'urgent grid not-urgent'
@@ -112,7 +112,7 @@
 }
 
 .drag-icon {
-	cursor: grab;
+	cursor: move;
 	width: 25px;
 	height: 25px;
 	flex-shrink: 0;
@@ -166,7 +166,7 @@
 
 	ul {
 		display: flex;
-		grid-gap: 10px;
+		gap: 22px;
 		flex-direction: column;
 		list-style: none;
 		padding: 20px 20px 20px 0;
@@ -266,9 +266,26 @@
 .value {
 	flex-grow: 1;
 	outline: none;
+	position: relative;
+
+	&:hover {
+		cursor: text;
+	}
 
 	&:focus-visible {
 		border: 1px solid white;
+	}
+
+	&:before {
+		content: 'Added ' attr(data-date);
+		display: block;
+		position: absolute;
+		top: -14px;
+		font-family: var(--font-geist-mono);
+		font-size: 9px;
+		border: 1px solid black;
+		border-bottom: none;
+		padding-inline: 4px;
 	}
 }
 

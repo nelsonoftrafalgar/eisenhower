@@ -1,10 +1,11 @@
 import './page.css'
 
+import { ClientErrorTracker } from '@/components/ClientErrorTracker'
 import { Matrix } from '@/components/Matrix'
 
 export default function Home() {
 	return (
-		<>
+		<ClientErrorTracker>
 			<h1 className='title'>EISENHOWER MATRIX</h1>
 			<div className='master'>
 				<div className='important'>IMPORTANT</div>
@@ -19,6 +20,6 @@ export default function Home() {
 				</div>
 				<div className='not-important'>NOT IMPORTANT</div>
 			</div>
-		</>
+		</ClientErrorTracker>
 	)
 }

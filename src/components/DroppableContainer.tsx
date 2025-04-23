@@ -45,6 +45,7 @@ export function DroppableContainer({
 			}}
 			columns={columns}
 			id={id}
+			items={items}
 			{...props}
 		>
 			{children}

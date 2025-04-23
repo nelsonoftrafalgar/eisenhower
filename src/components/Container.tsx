@@ -1,14 +1,15 @@
 import React, { forwardRef } from 'react'
 
 import { ClearAll } from '../icons/ClearAll'
-// import Image from 'next/image'
 import { UniqueIdentifier } from '@dnd-kit/core'
+import { clearDatesInStorage } from '@/utils/storage'
 
 export interface ContainerProps {
 	children: React.ReactNode
 	columns?: number
 	style?: React.CSSProperties
 	id: UniqueIdentifier
+	items: UniqueIdentifier[]
 	handleClearAll: () => void
 }
 
@@ -20,10 +21,16 @@ const Container = forwardRef<HTMLDivElement, ContainerProps>(
 			style,
 			id,
 			handleClearAll,
+			items,
 			...props
 		}: ContainerProps,
 		ref
 	) => {
+		const clearAll = () => {
+			handleClearAll()
+			clearDatesInStorage(items)
+		}
+
 		return (
 			<div
 				{...props}
@@ -38,7 +45,7 @@ const Container = forwardRef<HTMLDivElement, ContainerProps>(
 			>
 				<div className='header'>
 					<h2>{id.toString().toUpperCase()}</h2>
-					<button onClick={handleClearAll} className='clear-all-button'>
+					<button onClick={clearAll} className='clear-all-button'>
 						<ClearAll />
 					</button>
 				</div>
