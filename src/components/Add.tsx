@@ -26,10 +26,12 @@ export const Add = ({ handleAddItem }: AddProps) => {
 	}
 
 	const addItem = () => {
-		setAddMode(false)
-		handleAddItem(value)
 		setValue('')
-		saveDateToStorage(value)
+		setAddMode(false)
+		if (value) {
+			handleAddItem(value)
+			saveDateToStorage(value)
+		}
 	}
 
 	const handleAdd: KeyboardEventHandler<HTMLInputElement> = (e) => {
